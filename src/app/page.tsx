@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useRef, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { ProfileCard }  from '@/components/ProfileCard'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { ErrorCard }    from '@/components/ErrorCard'
@@ -21,6 +22,7 @@ import { useGSAP } from '@gsap/react'
 const PLACEHOLDER = `https://leetcode.com/u/neal_wu/\nhttps://leetcode.com/u/tourist/\nlee215`
 
 export default function Home() {
+  const router  = useRouter()
   const [input,     setInput]     = useState('')
   const [results,   setResults]   = useState<ProfileResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -337,7 +339,26 @@ export default function Home() {
               {results.map((result, i) =>
                 result.loading  ? <div key={`${result.username}-${i}`} className="skeleton-card"><SkeletonCard /></div> :
                 result.error    ? <div key={`${result.username}-${i}`} className="profile-card"><ErrorCard username={result.username} error={result.error} /></div> :
-                result.data     ? <ProfileCard  key={`${result.username}-${i}`} username={result.username} data={result.data} index={i} studentInfo={result.studentInfo} /> :
+                result.data     ? (
+                  <div
+                    key={`${result.username}-${i}`}
+                    className="profile-card cursor-pointer"
+                    style={{ borderRadius: '1rem', transition: 'transform 0.15s ease, box-shadow 0.15s ease' }}
+                    onClick={() => {
+                      sessionStorage.setItem(`profile:${result.username}`, JSON.stringify(result.data))
+                      if (result.studentInfo) sessionStorage.setItem(`student:${result.username}`, JSON.stringify(result.studentInfo))
+                      router.push(`/profile/${result.username}`)
+                    }}
+                  >
+                    <ProfileCard username={result.username} data={result.data} index={i} studentInfo={result.studentInfo} />
+                    <div
+                      className="px-4 py-2 mono text-center text-xs"
+                      style={{ borderTop: '1px solid var(--border)', color: 'var(--muted)' }}
+                    >
+                      Click to view full profile →
+                    </div>
+                  </div>
+                ) :
                 null
               )}
             </div>

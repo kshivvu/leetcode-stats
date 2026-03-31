@@ -32,7 +32,11 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
-
+.env.local
+claude.md
+todo.md
+todo2.md
+todo3.md
 # vercel
 .vercel
 

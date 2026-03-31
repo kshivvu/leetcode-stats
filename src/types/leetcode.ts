@@ -88,3 +88,75 @@ export interface StudentInfo {
   section?: string
   branch?: string
 }
+
+// ── Submissions ────────────────────────────────────────────────────────────
+
+export interface Submission {
+  id: string
+  title: string
+  titleSlug: string
+  timestamp: string
+  lang: string
+}
+
+export interface SubmissionDetails {
+  runtime: string
+  runtimePercentile: number
+  memory: string
+  memoryPercentile: number
+  code: string
+  lang: { name: string; verboseName: string }
+  question: {
+    title: string
+    titleSlug: string
+    difficulty: string
+    questionFrontendId: string
+    topicTags: { name: string; slug: string }[]
+  }
+  timestamp: string
+  codeUnavailable?: boolean
+}
+
+export interface Question {
+  questionFrontendId: string
+  title: string
+  titleSlug: string
+  difficulty: string
+  content: string
+  topicTags: { name: string; slug: string }[]
+  hints: string[]
+  exampleTestcases: string
+}
+
+// ── AI / Interview ─────────────────────────────────────────────────────────
+
+export interface Message {
+  role: 'user' | 'assistant'
+  content: string
+  rating?: 'bad' | 'average' | 'good' | 'perfect'
+}
+
+export interface InterviewConfig {
+  difficulty: 'Easy' | 'Medium' | 'Hard' | 'Mixed'
+  mode: 'submitted-code' | 'custom-topics'
+  selectedSubmissionIds: string[]
+  topics: string[]
+  numQuestions: number
+  style: 'conversational' | 'strict'
+}
+
+export interface QuestionResult {
+  question: string
+  performance: 'strong' | 'partial' | 'missed'
+  feedback: string
+}
+
+export interface InterviewSummaryResult {
+  overallScore: number
+  totalQuestions: number
+  questionResults: QuestionResult[]
+  overallFeedback: string
+  topStrength: string
+  topImprovement: string
+  interviewReadiness: 'Not Ready' | 'Needs Work' | 'Almost There' | 'Ready'
+}
