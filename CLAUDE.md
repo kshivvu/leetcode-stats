@@ -15,6 +15,18 @@ Read this file completely before writing any code. Follow every instruction exac
 
 ---
 
+## Implemented Features
+
+1. **Export to Excel**: Download an `.xlsx` report of user stats.
+2. **Leaderboard Table View**: A fully-sortable alternative to the Grid view.
+3. **Class Summary Dashboard**: Aggregates averages, top streaks, and activities across the entire searched batch.
+4. **Problem Assignment Checker**: Check if the loaded profiles have solved a specified LeetCode problem in their recent submissions.
+5. **Save & Load Batches**: Persist frequent batch configurations to `window.localStorage`.
+6. **Shareable Report Link**: Easily construct dynamic `/?users=...` links generated via a 'Share Link' button + `<Toast>` UI.
+7. **Topic Coverage Heatmap**: Expandable visualization of topic completion on an individual's Profile Card.
+
+---
+
 ## Setup Commands
 
 After scaffolding all files, run:
@@ -45,14 +57,26 @@ leetcode-stats/
 │   │   ├── layout.tsx
 │   │   ├── page.tsx
 │   │   └── api/
-│   │       └── leetcode/
+│   │       ├── leetcode/
+│   │       │   └── route.ts
+│   │       └── recent-submissions/
 │   │           └── route.ts
 │   ├── components/
+│   │   ├── ClassSummary.tsx
+│   │   ├── ErrorCard.tsx
+│   │   ├── LeaderboardTable.tsx
+│   │   ├── ProblemChecker.tsx
 │   │   ├── ProfileCard.tsx
 │   │   ├── RingChart.tsx
+│   │   ├── SavedBatches.tsx
 │   │   ├── SkeletonCard.tsx
-│   │   └── ErrorCard.tsx
+│   │   ├── ThemeToggle.tsx
+│   │   ├── Toast.tsx
+│   │   └── TopicHeatmap.tsx
 │   ├── lib/
+│   │   ├── activityStatus.ts
+│   │   ├── batchStorage.ts
+│   │   ├── exportExcel.ts
 │   │   └── utils.ts
 │   └── types/
 │       └── leetcode.ts

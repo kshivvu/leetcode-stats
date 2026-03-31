@@ -7,7 +7,9 @@
   --bg: #0a0a0f;
   --surface: #111118;
   --surface2: #1a1a26;
+  --surface-glass: rgba(17, 17, 24, 0.6);
   --border: #2a2a3d;
+  --border-glass: rgba(255, 255, 255, 0.08);
   --accent: #f0b429;
   --accent2: #e85d04;
   --easy: #00b8a9;
@@ -17,6 +19,22 @@
   --muted: #6b6b8a;
 }
 
+[data-theme="light"] {
+  --bg: #f5f5f0;
+  --surface: #ffffff;
+  --surface2: #f0f0ea;
+  --surface-glass: rgba(255, 255, 255, 0.8);
+  --border: #ddddd5;
+  --border-glass: rgba(0, 0, 0, 0.08);
+  --accent: #d4920a;
+  --accent2: #c04a00;
+  --easy: #008f83;
+  --medium: #d4920a;
+  --hard: #d42048;
+  --text: #1a1a1a;
+  --muted: #6b6b6b;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
@@ -24,29 +42,32 @@ html, body {
   color: var(--text);
   font-family: 'Syne', sans-serif;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
-body {
+/* Dynamic Animated Background */
+.bg-particles {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: -1;
   background-image:
     radial-gradient(ellipse 80% 50% at 50% -20%, rgba(240, 180, 41, 0.08) 0%, transparent 60%),
     repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.015) 39px, rgba(255,255,255,0.015) 40px),
     repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.015) 39px, rgba(255,255,255,0.015) 40px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to { background-position: 0 0, 0 40px, 40px 0; }
 }
 
 .mono { font-family: 'JetBrains Mono', monospace; }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position:  200% 0; }
-}
-
-.animate-fade-up {
-  animation: fadeUp 0.5s ease forwards;
 }
 
 .skeleton {
@@ -55,13 +76,13 @@ body {
   animation: shimmer 1.5s infinite;
 }
 
-.card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-.card-hover:hover {
-  transform: translateY(-2px);
-  border-color: rgba(240, 180, 41, 0.3);
-  box-shadow: 0 8px 32px rgba(240, 180, 41, 0.08);
+/* Glassmorphism Classes */
+.glass-panel {
+  background: var(--surface-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
 
 .ring-chart {

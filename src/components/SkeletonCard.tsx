@@ -1,9 +1,6 @@
 export function SkeletonCard() {
   return (
-    <div
-      className="rounded-2xl p-6 border card-hover"
-      style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}
-    >
+    <div className="rounded-2xl p-6 glass-panel card-hover relative overflow-hidden">
       <div className="flex items-center gap-4 mb-6">
         <div className="skeleton rounded-full w-14 h-14" />
         <div className="flex-1 space-y-2">

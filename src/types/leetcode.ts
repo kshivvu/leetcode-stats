@@ -78,4 +78,13 @@ export interface ProfileResult {
   data?: LeetCodeData
   error?: string
   loading: boolean
+  studentInfo?: StudentInfo
+}
+
+export interface StudentInfo {
+  name: string
+  rollNo: string
+  leetcodeUrl: string
+  section?: string
+  branch?: string
 }

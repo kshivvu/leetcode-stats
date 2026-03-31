@@ -48,3 +48,24 @@ export function getContestBadgeColor(badge?: string): string {
     default:         return '#6b6b8a'
   }
 }
+
+/**
+ * Computes a consistency score (0-100) based on streak, active days, solve volume, and acceptance rate.
+ */
+export function getConsistencyScore(data: LeetCodeData): number {
+  const user = data.matchedUser
+  const contest = data.userContestRanking
+
+  const streak = user.userCalendar?.streak ?? 0
+  const totalActiveDays = user.userCalendar?.totalActiveDays ?? 0
+  const totalSolved = getSolvedCount(user.submitStats.acSubmissionNum, 'All')
+  const acceptanceRate = getAcceptanceRate(data)
+
+  const score =
+    (streak / 365) * 40 +
+    (totalActiveDays / 365) * 30 +
+    (totalSolved / 1000) * 20 +
+    (acceptanceRate / 100) * 10
+
+  return Math.min(100, Math.round(score))
+}

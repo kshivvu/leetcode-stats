@@ -1,9 +1,8 @@
 export function ErrorCard({ username, error }: { username: string; error: string }) {
   return (
     <div
-      className="rounded-2xl p-6 border flex flex-col items-center justify-center gap-3 text-center"
+      className="rounded-2xl p-6 glass-panel flex flex-col items-center justify-center gap-3 text-center"
       style={{
-        background: 'var(--surface)',
         borderColor: 'rgba(255,55,95,0.25)',
         minHeight: 160,
       }}
