@@ -17,13 +17,21 @@ Read this file completely before writing any code. Follow every instruction exac
 
 ## Implemented Features
 
-1. **Export to Excel**: Download an `.xlsx` report of user stats.
-2. **Leaderboard Table View**: A fully-sortable alternative to the Grid view.
-3. **Class Summary Dashboard**: Aggregates averages, top streaks, and activities across the entire searched batch.
-4. **Problem Assignment Checker**: Check if the loaded profiles have solved a specified LeetCode problem in their recent submissions.
-5. **Save & Load Batches**: Persist frequent batch configurations to `window.localStorage`.
-6. **Shareable Report Link**: Easily construct dynamic `/?users=...` links generated via a 'Share Link' button + `<Toast>` UI.
-7. **Topic Coverage Heatmap**: Expandable visualization of topic completion on an individual's Profile Card.
+1.  **Export to Excel**: Download an `.xlsx` report of user stats.
+2.  **Leaderboard Table View**: A fully-sortable alternative to the Grid view.
+3.  **Class Summary Dashboard**: Aggregates averages, top streaks, and activities across the entire searched batch.
+4.  **Problem Assignment Checker**: Check if the loaded profiles have solved a specified LeetCode problem in their recent submissions.
+5.  **Save & Load Batches**: Persist frequent batch configurations to `window.localStorage`.
+6.  **Shareable Report Link**: Easily construct dynamic `/?users=...` links generated via a 'Share Link' button + `<Toast>` UI.
+7.  **Topic Coverage Heatmap**: Expandable visualization of topic completion on an individual's Profile Card.
+8.  **Admin Authentication**: Secure Node.js server-side guard for detail routes (`/mock` and `/submissions`) with automatic redirect-back logic. The primary profile stats remain public.
+9.  **AI Profile Analysis**: Automated placement readiness scorecard generation using Gemini 2.0 Flash via OpenRouter.
+10. **Interactive AI Chat**: Multi-turn conversation with preset prompts to deep-dive into student performance analysis.
+11. **Submissions Deep-Dive**: Full submission history viewer with syntax-highlighted code (highlight.js) and AI technical code reviews.
+12. **Mock Interview Assistant**: High-automation helper mode where AI suggests questions and hidden "Expected Answers". Selecting a rating (Bad to Perfect) automatically triggers the next question and syncs the code reference panel to the relevant problem.
+13. **LeetCode Session Integration**: Secure usage of `LEETCODE_SESSION` cookies to fetch private submission code directly from LeetCode.
+14. **Premium Markdown Rendering**: All AI outputs (Scorecard, Chat, Code Review, Interview) are rendered with `react-markdown` for a professional, formatted look.
+15. **Concise AI Personas**: All system prompts optimized for "short and crisp" 1-2 sentence delivery to ensure a fast, fluff-free experience.
 
 ---
 
@@ -51,16 +59,40 @@ leetcode-stats/
 ├── tailwind.config.js
 ├── postcss.config.js
 ├── tsconfig.json
+├── middleware.ts
+├── .env.local
 ├── src/
 │   ├── app/
 │   │   ├── globals.css
 │   │   ├── layout.tsx
 │   │   ├── page.tsx
+│   │   ├── login/
+│   │   │   └── page.tsx
+│   │   ├── profile/
+│   │   │   └── [username]/
+│   │   │       ├── page.tsx
+│   │   │       ├── submissions/
+│   │   │       │   └── page.tsx
+│   │   │       └── mock/
+│   │   │           └── page.tsx
 │   │   └── api/
 │   │       ├── leetcode/
 │   │       │   └── route.ts
-│   │       └── recent-submissions/
-│   │           └── route.ts
+│   │       ├── auth/
+│   │       │   └── route.ts
+│   │       ├── submissions/
+│   │       │   └── route.ts
+│   │       ├── submission-details/
+│   │       │   └── route.ts
+│   │       ├── question/
+│   │       │   └── route.ts
+│   │       └── ai/
+│   │           ├── scorecard/
+│   │           ├── chat/
+│   │           ├── code-review/
+│   │           ├── interview-question/
+│   │           └── interview-summary/
+│   │               └── route.ts
 │   ├── components/
 │   │   ├── ClassSummary.tsx
 │   │   ├── ErrorCard.tsx
@@ -70,14 +102,32 @@ leetcode-stats/
 │   │   ├── RingChart.tsx
 │   │   ├── SavedBatches.tsx
 │   │   ├── SkeletonCard.tsx
-│   │   ├── ThemeToggle.tsx
 │   │   ├── Toast.tsx
-│   │   └── TopicHeatmap.tsx
+│   │   ├── TopicHeatmap.tsx
+│   │   ├── Markdown.tsx
+│   │   ├── profile/
+│   │   │   ├── SessionCookieModal.tsx
+│   │   │   ├── ProfileHeader.tsx
+│   │   │   ├── StatsGrid.tsx
+│   │   │   ├── ScorecardPanel.tsx
+│   │   │   └── AIChat.tsx
+│   │   ├── submissions/
+│   │   │   ├── SubmissionList.tsx
+│   │   │   ├── CodeViewer.tsx
+│   │   │   └── CodeReviewPanel.tsx
+│   │   └── mock/
+│   │       ├── InterviewConfig.tsx
+│   │       ├── InterviewSession.tsx
+│   │       └── InterviewSummary.tsx
 │   ├── lib/
-│   │   ├── activityStatus.ts
 │   │   ├── batchStorage.ts
 │   │   ├── exportExcel.ts
-│   │   └── utils.ts
+│   │   ├── utils.ts
+│   │   ├── openrouter.ts
+│   │   ├── parse-ai-json.ts
+│   │   ├── lc-session.ts
+│   │   ├── lc-fetch.ts
+│   │   └── prompts.ts
 │   └── types/
 │       └── leetcode.ts
 ```
@@ -101,7 +151,9 @@ leetcode-stats/
   "dependencies": {
     "next": "14.2.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "highlight.js": "^11.9.0",
+    "react-markdown": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -1183,4 +1235,32 @@ ProfileCard renders: ring chart, beats %, stats grid,
 ## Done
 
 After writing all files and running `npm install && npm run dev`, the app is fully functional. No additional configuration is required.
+
+---
+
+## AI & Advanced Features (Todo3 Updates)
+
+### 1. Authentication & Security
+The app implements a custom admin authentication layer to protect deep-dive profile pages and AI analysis tools.
+- **Server Guard**: Enforces auth at the Node.js layer in `page.tsx` for protected routes. If the `admin_auth` cookie is missing or doesn't match the `ADMIN_SECRET`, it redirects the user to `/login`.
+- **Login**: A dedicated dark-themed login page validates a server-side `ADMIN_SECRET` and sets a secure `httpOnly` cookie.
+- **LC Session**: To fetch private submission code, users can optionally provide their own `LEETCODE_SESSION` cookie via a secure client-side modal. This cookie is stored only in `localStorage` and never sent to our servers (only forwarded to LeetCode).
+
+### 2. AI Infrastructure (OpenRouter + Gemini 2.0 Flash)
+All AI features utilize the `Gemini 2.0 Flash` model for low-latency, high-performance analysis.
+- **Streaming**: Most AI responses (scorecard, chat, code review, interview) are streamed for immediate user feedback.
+- **Prompts**: Standardized system prompts in `src/lib/prompts.ts` ensure consistent analysis across different features. All responses are optimized for "short and crisp" delivery.
+- **JSON Parsing**: A defensive parser (`src/lib/parse-ai-json.ts`) handles AI-generated JSON, stripping markdown fences and ensuring validity.
+
+### 3. Profile Deep-Dive Pages
+Clicking any profile card from the home page opens a dedicated analysis dashboard:
+- **Placement Readiness Scorecard**: Auto-generated AI report analyzing strengths, gaps, and readiness levels.
+- **Interactive Chat**: A sidebar for asking specific questions about a student's profile (e.g., "What should they study next?").
+- **Submissions Viewer**: A complete history of recent accepted submissions with syntax highlighting and AI-powered technical reviews.
+
+### 4. Interactive Mock Interview System
+A sophisticated system for simulating technical interviews based on student solved history.
+- **Configurable**: Choose difficulty (Easy/Medium/Hard/Mixed), mode (Submitted Code vs Custom Topics), and style (Conversational vs Strict).
+- **Session Managed**: Real-time dialogue with the AI, which provides hints, evaluates answers, and maintains context. State is persisted in `sessionStorage` to handle refreshes.
+- **Evaluation**: A final structured report with overall scores, question-by-question breakdown, and a placement readiness assessment.
 
