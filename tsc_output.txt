@@ -1,6 +1,0 @@
-src/components/ProfileCard.tsx(127,78): error TS2561: Object literal may only specify known properties, but 'translateZ' does not exist in type 'Properties<string | number, string & {}>'. Did you mean to write 'translate'?
-src/components/ProfileCard.tsx(180,79): error TS2561: Object literal may only specify known properties, but 'translateZ' does not exist in type 'Properties<string | number, string & {}>'. Did you mean to write 'translate'?
-src/components/ProfileCard.tsx(190,170): error TS2561: Object literal may only specify known properties, but 'translateZ' does not exist in type 'Properties<string | number, string & {}>'. Did you mean to write 'translate'?
-src/components/ProfileCard.tsx(210,57): error TS2561: Object literal may only specify known properties, but 'translateZ' does not exist in type 'Properties<string | number, string & {}>'. Did you mean to write 'translate'?
-src/components/ProfileCard.tsx(226,57): error TS2561: Object literal may only specify known properties, but 'translateZ' does not exist in type 'Properties<string | number, string & {}>'. Did you mean to write 'translate'?
-src/components/ProfileCard.tsx(245,57): error TS2561: Object literal may only specify known properties, but 'translateZ' does not exist in type 'Properties<string | number, string & {}>'. Did you mean to write 'translate'?
