@@ -105,6 +105,7 @@ export function InterviewSession({
       const decoder = new TextDecoder()
       let fullContent = ''
       let hasParsedRef = false
+      let currentSubIdx = subIdx
 
       while (true) {
         const { done, value } = await reader.read()
@@ -114,13 +115,15 @@ export function InterviewSession({
 
         // Logic to parse ### REFERENCED CODE: [ID] and switch subIdx
         if (!hasParsedRef) {
-          const match = fullContent.match(/### REFERENCED CODE[:\s]*(?:None|(\d+))/i)
+          // Robust regex to find the ID even if AI adds brackets or "CODE_ID:" prefix
+          const match = fullContent.match(/### REFERENCED CODE[:\s]*?(?:None|[^0-9\n]*(\d+))/i)
           if (match) {
             hasParsedRef = true
             if (match[1] !== undefined) {
               const idx = parseInt(match[1])
               if (!isNaN(idx) && idx >= 0 && idx < submissionDetails.length) {
                 setSubIdx(idx)
+                currentSubIdx = idx
               }
             }
           }
@@ -138,7 +141,7 @@ export function InterviewSession({
         next[next.length - 1] = { role: 'assistant', content: fullContent }
         const newQ = qCount + 1
         setQCount(newQ)
-        persistSession(next, newQ, subIdx, revealedAnswers)
+        persistSession(next, newQ, currentSubIdx, revealedAnswers)
         return next
       })
     } finally {
@@ -348,25 +351,22 @@ export function InterviewSession({
             const refHeader = '### REFERENCED CODE';
             const answerHeader = '### EXPECTED ANSWER';
             
-            // Remove REFERENCED CODE from visible text if it exists
-            if (visibleContent.includes(refHeader)) {
-              const parts = visibleContent.split(refHeader);
-              // parts[0] is everything before refHeader
-              // parts[1] is everything after refHeader
-              if (parts[1].includes(answerHeader)) {
-                 const subParts = parts[1].split(answerHeader);
-                 // subParts[0] is the ref value
-                 // subParts[1] is the answer
-                 visibleContent = parts[0] + subParts[0].substring(subParts[0].indexOf('\n') + 1); // Remove the first line which is the ID
-                 hiddenContent = subParts[1];
-              } else {
-                 visibleContent = parts[0] + parts[1].substring(parts[1].indexOf('\n') + 1);
+            // Cleanly remove internal tags from visible text using regex
+            // This removes the header AND the value (ID or None) until the next double newline or header
+            visibleContent = visibleContent
+              .replace(/### REFERENCED CODE[\s\S]*?(?=### SUGGESTED QUESTION|$)/i, '')
+              .replace(/### EXPECTED ANSWER[\s\S]*?(?=### EVALUATION CRITERIA|$)/i, '');
+
+            // Also extract expected answer for the hidden toggle
+            if (content.includes(answerHeader)) {
+              const parts = content.split(answerHeader);
+              if (parts[1]) {
+                const answerParts = parts[1].split('### EVALUATION CRITERIA');
+                hiddenContent = answerParts[0].trim();
               }
-            } else if (visibleContent.includes(answerHeader)) {
-              const parts = visibleContent.split(answerHeader);
-              visibleContent = parts[0];
-              hiddenContent = parts[1];
             }
+
+            visibleContent = visibleContent.trim();
 
             return (
               <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>

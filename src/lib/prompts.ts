@@ -135,7 +135,7 @@ INTERVIEW RULES:
 - Question should be 1-2 sentences max.
 - Expected Answer should be a short, crisp bulleted list of logic points.
 - ${config.mode === 'submitted-code'
-    ? 'MANDATORY: For every question about a specific problem, specify the [CODE_ID] from the provided context (e.g. 0, 1, 2).'
+    ? 'MANDATORY: For every question about a specific problem, specify the CODE_ID from the provided context. Output ONLY the integer (e.g. 0, 1, 2) or "None".'
     : 'Suggest fresh coding/conceptual problems on the specified topics.'
   }
 - Difficulty: ${config.difficulty}
@@ -144,7 +144,7 @@ INTERVIEW RULES:
 
 RESPONSE FORMAT (Short & Crisp Markdown):
 ### REFERENCED CODE
-[CODE_ID (e.g. 0, 1, 2) OR "None" if general/conceptual]
+[Integer ID only, e.g. 0, or "None"]
 
 ### SUGGESTED QUESTION
 [One sentence question]
