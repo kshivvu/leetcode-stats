@@ -15,19 +15,25 @@ export function buildProfileContext(
   data: LeetCodeData,
   studentName?: string
 ): string {
-  const user    = data.matchedUser
+  const user    = data?.matchedUser
+  if (!user) {
+    return `STUDENT PROFILE:
+Name: ${studentName || username}
+LeetCode Username: ${username}
+No profile data available.`
+  }
   const contest = data.userContestRanking
-  const easy    = getSolvedCount(user.submitStats.acSubmissionNum, 'Easy')
-  const medium  = getSolvedCount(user.submitStats.acSubmissionNum, 'Medium')
-  const hard    = getSolvedCount(user.submitStats.acSubmissionNum, 'Hard')
-  const total   = getSolvedCount(user.submitStats.acSubmissionNum, 'All')
+  const easy    = getSolvedCount(user.submitStats?.acSubmissionNum, 'Easy')
+  const medium  = getSolvedCount(user.submitStats?.acSubmissionNum, 'Medium')
+  const hard    = getSolvedCount(user.submitStats?.acSubmissionNum, 'Hard')
+  const total   = getSolvedCount(user.submitStats?.acSubmissionNum, 'All')
   const tags    = getTopTags(data, 10).map(t => `${t.tagName}(${t.problemsSolved})`).join(', ')
 
   return `STUDENT PROFILE:
-Name: ${studentName || user.profile.realName || username}
+Name: ${studentName || user.profile?.realName || username}
 LeetCode Username: ${username}
-Country: ${user.profile.countryCode || 'N/A'}
-Company/School: ${user.profile.company || user.profile.school || 'N/A'}
+Country: ${user.profile?.countryCode || 'N/A'}
+Company/School: ${user.profile?.company || user.profile?.school || 'N/A'}
 
 PROBLEM SOLVING:
 Easy: ${easy} | Medium: ${medium} | Hard: ${hard} | Total: ${total}

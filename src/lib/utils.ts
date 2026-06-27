@@ -8,22 +8,22 @@ export function extractUsername(url: string): string | null {
   return null
 }
 
-export function getSolvedCount(stats: SubmissionStat[], difficulty: string): number {
-  return stats.find(s => s.difficulty === difficulty)?.count ?? 0
+export function getSolvedCount(stats: SubmissionStat[] | undefined, difficulty: string): number {
+  return stats?.find(s => s.difficulty === difficulty)?.count ?? 0
 }
 
 export function getAcceptanceRate(data: LeetCodeData): number {
-  const ac    = data.matchedUser.submitStats.acSubmissionNum.find(s => s.difficulty === 'All')
-  const total = data.matchedUser.submitStats.totalSubmissionNum.find(s => s.difficulty === 'All')
+  const ac    = data?.matchedUser?.submitStats?.acSubmissionNum?.find(s => s.difficulty === 'All')
+  const total = data?.matchedUser?.submitStats?.totalSubmissionNum?.find(s => s.difficulty === 'All')
   if (!ac || !total || total.submissions === 0) return 0
   return Math.round((ac.submissions / total.submissions) * 100 * 10) / 10
 }
 
 export function getTopTags(data: LeetCodeData, limit = 5) {
   const all = [
-    ...data.matchedUser.tagProblemCounts.advanced,
-    ...data.matchedUser.tagProblemCounts.intermediate,
-    ...data.matchedUser.tagProblemCounts.fundamental,
+    ...(data?.matchedUser?.tagProblemCounts?.advanced || []),
+    ...(data?.matchedUser?.tagProblemCounts?.intermediate || []),
+    ...(data?.matchedUser?.tagProblemCounts?.fundamental || []),
   ]
   return all.sort((a, b) => b.problemsSolved - a.problemsSolved).slice(0, limit)
 }
@@ -53,12 +53,13 @@ export function getContestBadgeColor(badge?: string): string {
  * Computes a consistency score (0-100) based on streak, active days, solve volume, and acceptance rate.
  */
 export function getConsistencyScore(data: LeetCodeData): number {
-  const user = data.matchedUser
-  const contest = data.userContestRanking
+  const user = data?.matchedUser
+  if (!user) return 0
+  const contest = data?.userContestRanking
 
   const streak = user.userCalendar?.streak ?? 0
   const totalActiveDays = user.userCalendar?.totalActiveDays ?? 0
-  const totalSolved = getSolvedCount(user.submitStats.acSubmissionNum, 'All')
+  const totalSolved = getSolvedCount(user.submitStats?.acSubmissionNum, 'All')
   const acceptanceRate = getAcceptanceRate(data)
 
   const score =

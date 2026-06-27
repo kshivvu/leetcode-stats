@@ -34,11 +34,17 @@ export function ScorecardPanel({ username, data, studentName }: ScorecardPanelPr
       const decoder = new TextDecoder()
       setStatus('streaming')
 
+      let accumulated = ''
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-        setContent(prev => prev + decoder.decode(value))
+        const text = decoder.decode(value)
+        accumulated += text
+        setContent(prev => prev + text)
       }
+      
+      // Cache the result in sessionStorage
+      sessionStorage.setItem(`scorecard:${username}`, accumulated)
       setStatus('done')
     } catch {
       setStatus('error')
@@ -46,10 +52,14 @@ export function ScorecardPanel({ username, data, studentName }: ScorecardPanelPr
   }, [username, data, studentName])
 
   useEffect(() => {
-    if (status === 'idle') {
+    const cached = sessionStorage.getItem(`scorecard:${username}`)
+    if (cached) {
+      setContent(cached)
+      setStatus('done')
+    } else if (status === 'idle') {
       streamScorecard()
     }
-  }, [status, streamScorecard])
+  }, [status, username, streamScorecard])
 
   return (
     <div
@@ -107,7 +117,7 @@ export function ScorecardPanel({ username, data, studentName }: ScorecardPanelPr
         {status === 'error' && (
           <div className="text-center py-4">
             <p className="text-sm mb-3" style={{ color: 'var(--hard)' }}>
-              Failed to generate analysis. Check your OpenRouter API key.
+              Failed to generate analysis. Check your Gemini API key.
             </p>
             <button
               onClick={streamScorecard}

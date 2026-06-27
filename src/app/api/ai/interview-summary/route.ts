@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { completeCompletion } from '@/lib/openrouter'
+import { completeCompletion } from '@/lib/gemini'
 import { buildProfileContext, interviewSummaryPrompt } from '@/lib/prompts'
 import { parseAIJson } from '@/lib/parse-ai-json'
 import { LeetCodeData } from '@/types/leetcode'
@@ -28,8 +28,11 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(parsed)
-  } catch (err) {
+  } catch (err: any) {
     console.error('Summary error:', err)
-    return NextResponse.json({ error: 'AI_ERROR' }, { status: 500 })
+    return NextResponse.json({
+      error: 'AI_ERROR',
+      details: err.message || String(err)
+    }, { status: 500 })
   }
 }
