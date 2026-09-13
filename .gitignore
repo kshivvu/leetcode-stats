@@ -33,10 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 .env.local
-CLAUDE.md
-TODO.md
-todo2.md
-todo3.md
+# markdown files (ignore all except README.md)
+*.md
+!README.md
 # vercel
 .vercel
 
